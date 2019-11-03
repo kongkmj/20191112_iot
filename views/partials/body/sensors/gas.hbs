@@ -1,0 +1,182 @@
+<div class="right_col" role="main">
+  <div class="">
+    <div class="page-title">
+      <div class="title_left">
+        <h3><i class="fa fa-fire"></i> gas</h3>
+      </div>
+
+      <div class="title_right">
+        <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search for...">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button">Go!</button>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="row">
+      <div class="col-md-6 col-sm-12 col-xs-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2>Gas_01</h2>
+            <ul class="nav navbar-right panel_toolbox">
+              <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+              </li>
+              <li><a class="close-link"><i class="fa fa-close"></i></a>
+              </li>
+            </ul>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <canvas id="gas01"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>Gas_01 <small>Data</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+
+                    <table id="datatable-buttons1" class="table table-striped table-bordered">
+                      <thead>
+                        <tr>
+                          <th width="18%">Device</th>
+                          <th width="22%">Gas</th>
+                          <th width="20%">Battery</th>
+                          <th width="20%">Date</th>
+                          <th width="20%">Time</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {{#each data}}
+                        <tr>
+                          <td>1</td>
+                          <td>{{this.gas}}</td>
+                          <td>97%</td>
+                          <td>{{this.date}}</td>
+                          <td>{{this.time}}</td>
+                        </tr>
+                        {{/each}}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+    </div>
+    </div>
+
+  </div>
+<script src="../socket.io/socket.io.js"></script>
+
+  <script>
+
+    var gas_01 =  {
+      type: 'line',
+      data: {
+      labels: [
+        {{#each Rdata}}
+         "{{this.time}}",
+        {{/each}}
+      ],
+      datasets: [{
+        label: "가스",
+        backgroundColor: "rgba(38, 185, 154, 0.31)",
+        borderColor: "rgba(38, 185, 154, 0.7)",
+        pointBorderColor: "rgba(38, 185, 154, 0.7)",
+        pointBackgroundColor: "rgba(38, 185, 154, 0.7)",
+        pointHoverBackgroundColor: "#fff",
+        pointHoverBorderColor: "rgba(220,220,220,1)",
+        pointBorderWidth: 1,
+        data: [
+          {{#each Rdata}}
+          {{this.gas}},
+        {{/each}}
+        ]
+      }]
+    },
+    options:{
+      responsive:true,
+      scales:{
+        yAxes:[{
+          ticks:{
+            suggestedMax: 100,
+            beginAtZero : true
+          },
+          display:true
+        }]
+      }
+    }
+   };
+
+const socket = io.connect("http://52.78.20.132:80");
+
+  function init_charts_gas() {
+
+      console.log('run_charts  typeof [' + typeof (Chart) + ']');
+
+      if( typeof (Chart) === 'undefined'){ return; }
+
+      console.log('init_charts');
+
+
+      Chart.defaults.global.legend = {
+        enabled: false
+
+      };
+
+    var gas1 = document.getElementById("gas01");
+    gas1.height=300;
+    window.gasLine1 = new Chart(gas1,gas_01);
+
+  }
+  window.onload=function () {
+
+   init_charts_gas();
+}
+
+
+  socket.on('Sensor',function (data) {
+    var wtMax= 20; // 그래프 점 갯수
+    var now = new Date();
+    var hour = now.getHours();
+    var min = now.getMinutes();
+    var second = now.getSeconds();
+
+
+    // gas_01
+    if(gas_01.data.datasets.length>0){
+      gas_01.data.labels.push(hour+":"+min+":"+second);
+
+      if(gas_01.data.labels.length>wtMax){
+        $.each(gas_01.data.datasets,function (i,datasets) {
+          gas_01.data.labels.shift(0,wtMax);
+          gas_01.data.datasets[0].data.shift(0,wtMax-1);
+          gas_01.data.datasets[0].data.push(data.gas);
+        })
+      }
+      else{
+        $.each(gas_01.data.datasets,function (i,datasets) {
+          gas_01.data.datasets[0].data.push(data.gas);
+        })
+      }
+
+      window.gasLine1.update();
+    }
+  });
+
+  </script>

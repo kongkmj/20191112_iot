@@ -1,0 +1,349 @@
+
+<div class="right_col" role="main">
+          <div class="">
+            <!-- top tiles -->
+          <div class="row tile_count">
+            <div class="animated flipInY col-lg-3 col-md-3 col-sm-3 col-xs-6">
+              <div class="tile-stats">
+                <div class="icon"><i id="bulbIcon"class="fa fa-lightbulb-o"
+                  {{#if bulbIcon}}
+                    style="color:#FFCD12"
+                  {{/if}}
+                  ></i></div>
+                 <div class="count" id="bulbTxt">{{bulb}}</div>
+                  <h3>전등</h3>
+                  <span class="pull-right"><i id="bulbToggle"class="fa fa-toggle-off fa-3x" style="padding-right:30px"></i></span>
+                  <span class="pull-left"><a href="#"><font size="3"style="padding-left:15px">View Details</font></a></span>
+              </div>
+            </div>
+            <div class="animated flipInY col-lg-3 col-md-3 col-sm-3 col-xs-6">
+              <div class="tile-stats">
+                <div class="icon"><i id="airIcon"class="fa fa-asterisk"
+                  {{#if airIcon}}
+                    style="color:#2478FF"
+                  {{/if}}
+                  ></i></div>
+                 <div class="count" id="airTxt">{{air}}</div>
+                  <h3>에어컨</h3>
+                  <span class="pull-right"><i id="airToggle"class="fa fa-toggle-off fa-3x" style="padding-right:30px"></i></span>
+                 <span class="pull-left"><a href="#"><font size="3"style="padding-left:15px">View Details</font></a></span>
+              </div>
+            </div>
+          </div>
+          <div class="row tile_count">
+            <div class="animated flipInY col-lg-3 col-md-3 col-sm-3 col-xs-6">
+              <div class="tile-stats">
+                <div class="icon"><i id="tempIcon"class="fa fa-dashboard"></i></div>
+                 <div class="count" id="tempTxt">{{temp}} ℃</div>
+                  <h3>온도</h3>
+                   <span class="pull-left"><a href="/sensors/temp"><font size="3"style="padding-left:15px">View Details</font></a></span>
+              </div>
+            </div>
+            <div class="animated flipInY col-lg-3 col-md-3 col-sm-3 col-xs-6">
+                <div class="tile-stats">
+                  <div class="icon"><i id="humiIcon"class="fa fa-tint"></i></div>
+                  <div class="count" id="humiTxt">{{humi}} %</div>
+                  <h3>습도</h3>
+                  <span class="pull-left"><a href="/sensors/humi"><font size="3"style="padding-left:15px">View Details</font></a></span>
+                </div>
+              </div>
+          </div>
+          <!-- /top tiles -->
+            <br />
+
+            <div class="row">
+              <div class="col-md-6 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>온도</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                  <canvas id="temp"></canvas>
+                  </div>
+                </div>
+              </div>
+            <div class="col-md-6 col-sm-12 col-xs-12">
+              <div class="x_panel">
+                <div class="x_title">
+                  <h2>습도</h2>
+                  <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                    </li>
+                  </ul>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                <canvas id="humi"></canvas>
+                </div>
+              </div>
+            </div>
+
+
+            </div>
+
+          </div>
+        </div>
+
+<script src="../socket.io/socket.io.js"></script>
+<script src="../vendors/jquery/dist/jquery.min.js"></script>
+<script>
+
+var tempChart = {
+  type: 'line',
+  data: {
+  labels: [
+    {{#each Rdata}}
+      "{{this.time}}",
+    {{/each}}
+  ],
+  datasets: [{
+    label: "온도",
+    backgroundColor: "rgba(38, 185, 154, 0.31)",
+    borderColor: "rgba(38, 185, 154, 0.7)",
+    pointBorderColor: "rgba(38, 185, 154, 0.7)",
+    pointBackgroundColor: "rgba(38, 185, 154, 0.7)",
+    pointHoverBackgroundColor: "#fff",
+    pointHoverBorderColor: "rgba(220,220,220,1)",
+    pointBorderWidth: 1,
+    data: [
+      {{#each Rdata}}
+        {{this.temp}},
+      {{/each}}
+    ]
+  }]
+  },
+  options:{
+    responsive:true,
+    scales:{
+      yAxes:[{
+        ticks:{
+          suggestedMax:30,
+          beginAtZero:true
+        },
+        display:true
+      }]
+    }
+  }
+};
+
+var humiChart = {
+  type: 'line',
+  data: {
+  labels: [
+    {{#each Rdata}}
+      "{{this.time}}",
+    {{/each}}
+  ],
+  datasets: [{
+    label: "습도",
+    backgroundColor: "rgba(38, 185, 154, 0.31)",
+    borderColor: "rgba(38, 185, 154, 0.7)",
+    pointBorderColor: "rgba(38, 185, 154, 0.7)",
+    pointBackgroundColor: "rgba(38, 185, 154, 0.7)",
+    pointHoverBackgroundColor: "#fff",
+    pointHoverBorderColor: "rgba(220,220,220,1)",
+    pointBorderWidth: 1,
+    data: [
+      {{#each Rdata}}
+        {{this.humi}},
+      {{/each}}
+    ]
+  }]
+  },
+  options:{
+    responsive:true,
+    scales:{
+      yAxes:[{
+        ticks:{
+          suggestedMax:100,
+          suggestedMin:0
+        },
+        display:true
+      }]
+    }
+  }
+};
+
+function init_charts() {
+
+console.log('run_charts  typeof [' + typeof (Chart) + ']');
+
+if( typeof (Chart) === 'undefined'){ return; }
+
+console.log('init_charts');
+
+
+Chart.defaults.global.legend = {
+  enabled: false
+};
+
+var temp =  document.getElementById("temp");
+var humi =  document.getElementById("humi");
+
+var chartSize = 70;
+temp.height= chartSize;
+humi.height=chartSize;
+window.tempLine = new Chart(temp,tempChart);
+window.humiLine = new Chart(humi,humiChart);
+}
+
+$(document).ready(function() {
+  init_charts();
+});
+
+var socket_bulb = io('/device/bulb');
+
+var socketdash = io();
+// Text
+const bulbTxt = $("#bulbTxt");
+const airTxt = $("#airTxt");
+const tempTxt = $("#tempTxt");
+const humiTxt = $("#humiTxt");
+
+
+// ICON
+const bulbIcon = $("#bulbIcon");
+const airIcon = $("#airIcon");
+const tempIcon = $("#tempIcon");
+const humiIcon = $("#humiIcon");
+
+// Toggle
+const bulbToggle = $("#bulbToggle");
+const airToggle = $("#airToggle");
+
+// bulb 클릭 이벤트
+bulbToggle.click(function () {
+  if(bulbTxt.text()=="OFF"){
+    bulbIcon.attr('style','color:#FCC200');
+    bulbToggle.removeClass("fa fa-toggle-off");
+    bulbToggle.addClass("fa fa-toggle-on");
+    bulbTxt.text("ON");
+    socket_bulb.emit("dash_bulb","ON");
+  }
+  else if(bulbTxt.text()=="ON"){
+    bulbIcon.removeAttr('style');
+    bulbToggle.removeClass("fa fa-toggle-on");
+    bulbToggle.addClass("fa fa-toggle-off");
+    bulbTxt.text("OFF");
+    socket_bulb.emit("dash_bulb","OFF");
+  }
+});
+
+// air 클릭 이벤트
+airToggle.click(function () {
+  if(airTxt.text()=="OFF"){
+    airIcon.attr('style','color:#2478FF');
+    airToggle.removeClass("fa fa-toggle-off");
+    airToggle.addClass("fa fa-toggle-on");
+    airTxt.text("ON");
+    //socket.emit("aircon",true);
+  }
+  else if(airTxt.text()=="ON"){
+    airIcon.removeAttr('style');
+    airToggle.removeClass("fa fa-toggle-on");
+    airToggle.addClass("fa fa-toggle-off");
+    airTxt.text("OFF");
+    //socket.emit("aircon",false);
+  }
+});
+
+
+
+// Socket.io 이벤트
+socketdash.on('close',function () {
+  tempIcon.removeAttr('style');
+  humiIcon.removeAttr('style');
+})
+
+// 전등
+socketdash.on('Bulb',function (data) {
+  if(data.status=="ON"){
+    bulbIcon.attr('style','color:#FFCD12');
+    bulbTxt.text(data.status);
+  }
+  else if(data.status=="OFF"){
+    bulbIcon.removeAttr('style');
+    bulbTxt.text(data.status);
+  }
+})
+
+// 에어컨
+socketdash.on('Air',function (data) {
+  if(data.status=="ON"){
+    airIcon.attr('style','color:#2478FF');
+    airTxt.text(data.status);
+  }
+  else if(data.status=="OFF"){
+    airIcon.removeAttr('style');
+    airTxt.text(data.status);
+  }
+})
+
+// 센서
+socketdash.on('Sensor',function (data) {
+
+  tempIcon.attr('style','color:#FF7012');
+  humiIcon.attr('style','color:#6B66FF');
+
+  const wtMax = 12;
+  var now = new Date();
+  var hour = now.getHours();
+  var min = now.getMinutes();
+  var second = now.getSeconds();
+
+  // temp
+  if(tempChart.data.datasets.length>0){
+    tempChart.data.labels.push(hour+":"+min+":"+second);
+
+    if(tempChart.data.labels.length>wtMax){
+      $.each(tempChart.data.datasets,function (i,datasets) {
+        tempChart.data.labels.shift(0,wtMax);
+        tempChart.data.datasets[0].data.shift(0,wtMax-1);
+        tempChart.data.datasets[0].data.push(data.temp);
+      })
+    }
+    else{
+      $.each(tempChart.data.datasets,function (i,datasets) {
+        tempChart.data.datasets[0].data.push(data.temp);
+      })
+    }
+
+    window.tempLine.update();
+  }
+
+  // humi
+  if(humiChart.data.datasets.length>0){
+    humiChart.data.labels.push(hour+":"+min+":"+second);
+
+    if(humiChart.data.labels.length>wtMax){
+      $.each(humiChart.data.datasets,function (i,datasets) {
+        humiChart.data.labels.shift(0,wtMax);
+        humiChart.data.datasets[0].data.shift(0,wtMax-1);
+        humiChart.data.datasets[0].data.push(data.humi);
+      })
+    }
+    else{
+      $.each(humiChart.data.datasets,function (i,datasets) {
+        humiChart.data.datasets[0].data.push(data.humi);
+      })
+    }
+
+    window.humiLine.update();
+  }
+
+
+  tempTxt.text(""+data.temp+"°C");
+  humiTxt.text(""+data.humi+"%");
+
+})
+
+</script>

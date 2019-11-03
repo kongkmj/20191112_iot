@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {{>head}}
+  </head>
+
+  <body class="nav-md">
+    <div class="container body">
+      <div class="main_container">
+        <div class="col-md-3 left_col">
+          <div class="left_col scroll-view">
+            <div class="navbar nav_title" style="border: 0;">
+              <a href="/dashboard" class="site_title"><i class="fa fa-paw"></i> <span>Golden Sheep!</span></a>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <!-- menu profile quick info -->
+            {{>profile/profile}}
+            <!-- /menu profile quick info -->
+
+            <br />
+
+            <!-- sidebar menu -->
+            {{>side/side}}
+            <!-- /sidebar menu -->
+
+            <!-- /menu footer buttons -->
+            {{>side/side-footer}}
+            <!-- /menu footer buttons -->
+          </div>
+        </div>
+
+        <!-- top navigation -->
+        {{>top/top}}
+        <!-- /top navigation -->
+
+        <!-- page content -->
+        {{{body}}}
+        <!-- /page content -->
+
+        <!-- footer content -->
+        <footer>
+          <div class="pull-right">
+            {{>footer/footer}}
+          </div>
+          <div class="clearfix"></div>
+        </footer>
+        <!-- /footer content -->
+      </div>
+    </div>
+    {{>bodyInclude_chart}}
+  </body>
+</html>
