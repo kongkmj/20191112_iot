@@ -23,8 +23,7 @@ router.get('/dashboard',function(req,res){
   newDash.airIcon = false;
   newDash.temp = "0";
   newDash.humi = "0";
-  
-  console.log(newDash);
+
 
   res.render('partials/body/dashboard',{
     name: newDash.name,

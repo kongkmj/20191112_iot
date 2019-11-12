@@ -23,6 +23,9 @@ router.post('/',function (req,res) {
 
   var temp = req.body.temp;
   var humi = req.body.humi;
+
+  console.log(temp);
+
   // Data recieve Validation
   if(temp===undefined) console.log('Temp is not sended!');
   if(humi===undefined) console.log('Humi is not sended!');
